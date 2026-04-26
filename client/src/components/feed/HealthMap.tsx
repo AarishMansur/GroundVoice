@@ -18,12 +18,11 @@ const regionCoords: Record<string, [number, number]> = {
   "Global / Multi-region": [20, 0],
 };
 
-// Component to handle map resizing and auto-centering
-function MapController({ coords }: { coords: [number, number][] }) {
+
+function MapController() {
   const map = useMap();
-  
+
   useEffect(() => {
-    // Small timeout to ensure container is fully rendered
     const timer = setTimeout(() => {
       map.invalidateSize();
     }, 100);
@@ -57,9 +56,9 @@ export default function HealthMap({ submissions, onViewReport }: HealthMapProps)
   }, [submissions]);
 
   const getColor = (severity: number) => {
-    if (severity >= 8) return "#ef4444"; // rose-500
-    if (severity >= 5) return "#f59e0b"; // amber-500
-    return "#0ea5e9"; // sky-500
+    if (severity >= 8) return "#ef4444";
+    if (severity >= 5) return "#f59e0b";
+    return "#0ea5e9";
   };
 
   return (
@@ -75,8 +74,8 @@ export default function HealthMap({ submissions, onViewReport }: HealthMapProps)
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
-        
-        <MapController coords={aggregatedData.map(d => d.coords)} />
+
+        <MapController />
 
         {aggregatedData.map((data) => (
           <CircleMarker
@@ -99,14 +98,14 @@ export default function HealthMap({ submissions, onViewReport }: HealthMapProps)
                 </h4>
                 <div className="mt-3 flex items-center gap-2">
                   <span className="text-xs font-medium text-slate-600">Avg. Severity:</span>
-                  <span 
+                  <span
                     className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
                     style={{ backgroundColor: getColor(data.avgSeverity) }}
                   >
                     {data.avgSeverity.toFixed(1)}/10
                   </span>
                 </div>
-                
+
                 <div className="mt-4 border-t border-slate-100 pt-3">
                   <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400">Latest Headline</p>
                   <p className="mt-1 text-sm font-semibold leading-snug text-slate-800">
@@ -124,8 +123,8 @@ export default function HealthMap({ submissions, onViewReport }: HealthMapProps)
           </CircleMarker>
         ))}
       </MapContainer>
-      
-      {/* Legend */}
+
+
       <div className="absolute bottom-6 left-6 z-[1000] flex flex-col gap-3 rounded-2xl border border-white/10 bg-slate-900/80 p-4 text-white shadow-2xl backdrop-blur-md">
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Severity Scale</p>
         <div className="flex items-center gap-3">

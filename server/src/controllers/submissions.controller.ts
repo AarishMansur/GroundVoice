@@ -140,7 +140,7 @@ export async function createSubmission(request: Request, response: Response) {
       return;
     }
 
-    // Analyze the submission to get severity and rationale (SITREP)
+
     const aiAnalysis = await analyzeSubmission(description).catch(() => ({
       sitrep: null,
       severity: 5,
