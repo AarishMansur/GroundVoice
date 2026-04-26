@@ -9,9 +9,11 @@ Ground Voice is a premium, AI-powered health reporting platform designed for fro
 ## Key Features
 
 - **AI-Powered SITREPs**: Automatically convert informal health observations into formal UN Situation Reports (SITREP) using Llama-3.1-8B.
+- **AI Severity Scoring**: Each submission is assigned a severity score (1–10) by AI analysis, surfacing the most critical health crises first.
+- **Global Health Map**: An interactive Leaflet-powered heatmap that visualizes report severity by region with color-coded markers (Sky → Amber → Rose), tooltips, and a floating legend.
 - **Guided NGO Reporting**: A streamlined, five-step workflow that turns complex frontline evidence into structured health statements.
 - **SDG 3 Alignment**: Every report is automatically mapped to global health categories (Mental Health, Healthcare Access, etc.).
-- **Public Health Feed**: A searchable, filterable public feed that surfaces urgent health concerns by region and issue type.
+- **Public Health Feed**: A searchable, filterable public feed with a List/Health Map toggle that surfaces urgent health concerns by region and issue type.
 - **Premium UI/UX**: A sleek, responsive interface built with glassmorphism effects, smooth animations, and a modern color palette.
 
 ---
@@ -21,6 +23,7 @@ Ground Voice is a premium, AI-powered health reporting platform designed for fro
 ### Frontend
 - **React (TypeScript)**: For a fast, type-safe interactive user experience.
 - **Tailwind CSS**: Modern, utility-first styling for a premium look.
+- **Leaflet + React-Leaflet**: Interactive global health map with CARTO dark tiles.
 - **Vite**: Ultra-fast build tool and development server.
 
 ### Backend
@@ -95,17 +98,23 @@ Ground Voice is a premium, AI-powered health reporting platform designed for fro
 groundvoice/
 ├── client/              # React Frontend (Vite)
 │   ├── src/
-│   │   ├── components/  # UI Components (Feed, Builder, Detail)
+│   │   ├── components/
+│   │   │   ├── feed/
+│   │   │   │   ├── PublicFeed.tsx   # List/Map toggle, filters, severity badges
+│   │   │   │   └── HealthMap.tsx    # Leaflet heatmap with region markers
+│   │   │   ├── landing/            # Home page & feature blocks
+│   │   │   ├── report-builder/     # Five-step submission wizard
+│   │   │   └── report-detail/      # Single report view with AI SITREP
 │   │   ├── lib/         # API logic & Constants
 │   │   ├── types/       # TypeScript Interfaces
-│   │   └── App.tsx      # Main Entry & Routing
+│   │   └── App.tsx      # Main Entry & Hash Routing
 ├── server/              # Express Backend
 │   ├── src/
 │   │   ├── controllers/ # API Route Handlers
-│   │   ├── lib/         # AI Integration & Prisma Client
+│   │   ├── lib/         # AI Integration (Severity + SITREP) & Prisma
 │   │   ├── routes/      # Express Route Definitions
 │   │   └── index.ts     # Server Entry
-└── prisma/              # Database Schema & Migrations
+└── prisma/              # Database Schema (with severity field)
 ```
 
 ---
