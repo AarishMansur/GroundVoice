@@ -38,7 +38,15 @@ export async function analyzeSubmission(reportContent: string): Promise<{ sitrep
 
             return { sitrep: reportText, severity };
         } catch (e) {
-            return { sitrep: cleanRawContent(content), severity: 5 };
+            let severityMatch = content.match(/"severity"\s*:\s*(\d+)/i);
+            let parsedSeverity = 5;
+            
+            if (severityMatch && severityMatch[1]) {
+                parsedSeverity = parseInt(severityMatch[1], 10);
+                parsedSeverity = Math.min(10, Math.max(1, parsedSeverity));
+            }
+            
+            return { sitrep: cleanRawContent(content), severity: parsedSeverity };
         }
     }).catch((error) => {
         console.error("AI_ANALYSIS_FAILURE:", error);
