@@ -140,6 +140,12 @@ export async function createSubmission(request: Request, response: Response) {
       return;
     }
 
+    // Analyze the submission to get severity and rationale (SITREP)
+    const aiAnalysis = await analyzeSubmission(description).catch(() => ({
+      sitrep: null,
+      severity: 5,
+    }));
+
     const submission = await prisma.submission.create({
       data: {
         title,
@@ -150,7 +156,8 @@ export async function createSubmission(request: Request, response: Response) {
         suggestedSol,
         authorName,
         sdgTag: getSubmissionCategory(issueType),
-        rationale: null,
+        rationale: aiAnalysis.sitrep,
+        severity: aiAnalysis.severity,
       },
     });
 
@@ -174,9 +181,9 @@ export async function analyzeSubmissionReport(request: Request, response: Respon
       return;
     }
 
-    const aiReport = await analyzeSubmission(description);
+    const aiAnalysis = await analyzeSubmission(description);
 
-    response.json({ aiReport });
+    response.json({ aiReport: aiAnalysis.sitrep, severity: aiAnalysis.severity });
   } catch (error) {
     console.error("AI Analysis failed", error);
     response.status(500).json({

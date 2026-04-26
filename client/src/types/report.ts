@@ -19,6 +19,7 @@ export type Submission = FormValues & {
   id: string;
   sdgTag: string | null;
   rationale: string | null;
+  severity: number;
   createdAt: string;
 };
 

@@ -4,6 +4,9 @@ import { API_BASE_URL, issueTypes, regions } from "../../lib/reportForm";
 import { formatSubmissionDate } from "../../lib/submission";
 import { FeedResponse, Submission } from "../../types/report";
 import LoadingSpinner from "../shared/LoadingSpinner";
+import HealthMap from "./HealthMap";
+
+type ViewMode = "list" | "map";
 
 type PublicFeedProps = {
   onCreateReport: () => void;
@@ -41,6 +44,7 @@ function PublicFeed({ onCreateReport, onViewReport }: PublicFeedProps) {
   const [stats, setStats] = useState({ totalReports: 0, regionCount: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
 
   useEffect(() => {
     let isActive = true;
@@ -113,6 +117,35 @@ function PublicFeed({ onCreateReport, onViewReport }: PublicFeedProps) {
             <StatCard label="Reports in view" value={String(stats.totalReports)} />
             <StatCard label="Regions represented" value={String(stats.regionCount)} />
           </div>
+
+
+          <div className="mt-8 flex items-center gap-3">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">View</span>
+            <div className="relative flex rounded-2xl border border-slate-200 bg-slate-100 p-1">
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={`relative z-10 flex items-center gap-2 rounded-xl px-5 py-2 text-[11px] font-bold uppercase tracking-[0.12em] transition-all duration-300 ${viewMode === "list"
+                    ? "bg-slate-950 text-white shadow-lg shadow-slate-950/20"
+                    : "text-slate-500 hover:text-slate-700"
+                  }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
+                List
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("map")}
+                className={`relative z-10 flex items-center gap-2 rounded-xl px-5 py-2 text-[11px] font-bold uppercase tracking-[0.12em] transition-all duration-300 ${viewMode === "map"
+                    ? "bg-slate-950 text-white shadow-lg shadow-slate-950/20"
+                    : "text-slate-500 hover:text-slate-700"
+                  }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" /><line x1="8" y1="2" x2="8" y2="18" /><line x1="16" y1="6" x2="16" y2="22" /></svg>
+                Health Map
+              </button>
+            </div>
+          </div>
         </article>
 
         {isLoading ? (
@@ -131,6 +164,8 @@ function PublicFeed({ onCreateReport, onViewReport }: PublicFeedProps) {
               submission details.
             </p>
           </div>
+        ) : viewMode === "map" ? (
+          <HealthMap submissions={submissions} onViewReport={onViewReport} />
         ) : (
           <div className="grid gap-5 xl:grid-cols-2">
             {submissions.map((submission) => (
@@ -147,9 +182,12 @@ function PublicFeed({ onCreateReport, onViewReport }: PublicFeedProps) {
                       {submission.title}
                     </h3>
                   </div>
-                  <p className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
-                    {formatSubmissionDate(submission.createdAt)}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <SeverityBadge severity={submission.severity} />
+                    <p className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                      {formatSubmissionDate(submission.createdAt)}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-3 text-sm">
@@ -269,6 +307,23 @@ function FeedSection({ title, body }: FeedSectionProps) {
       <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">{title}</p>
       <p className="mt-2 text-sm leading-7 text-slate-700">{body}</p>
     </section>
+  );
+}
+
+function SeverityBadge({ severity }: { severity: number }) {
+  const getSeverityConfig = (s: number) => {
+    if (s >= 8) return { label: "Critical", bg: "bg-rose-100", text: "text-rose-700", dot: "bg-rose-500" };
+    if (s >= 5) return { label: "Elevated", bg: "bg-amber-100", text: "text-amber-700", dot: "bg-amber-500" };
+    return { label: "Monitored", bg: "bg-sky-100", text: "text-sky-700", dot: "bg-sky-500" };
+  };
+
+  const config = getSeverityConfig(severity);
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full ${config.bg} px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em] ${config.text}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${config.dot} animate-pulse`} />
+      {config.label} ({severity})
+    </span>
   );
 }
 
