@@ -122,7 +122,7 @@ function MarkdownRenderer({ text }: { text: string }) {
       continue;
     }
 
-    const h1Match = trimmed.match(/^#\s+(.+)/);
+    const h1Match = trimmed.match(/^#\s*(.+)/);
     if (h1Match) {
       flushList();
       elements.push(
@@ -133,7 +133,7 @@ function MarkdownRenderer({ text }: { text: string }) {
       continue;
     }
 
-    const h2Match = trimmed.match(/^##\s+(.+)/);
+    const h2Match = trimmed.match(/^##\s*(.+)/);
     if (h2Match) {
       flushList();
       elements.push(
@@ -144,7 +144,7 @@ function MarkdownRenderer({ text }: { text: string }) {
       continue;
     }
 
-    const h3Match = trimmed.match(/^###\s+(.+)/);
+    const h3Match = trimmed.match(/^###\s*(.+)/);
     if (h3Match) {
       flushList();
       elements.push(
@@ -196,7 +196,8 @@ function MarkdownRenderer({ text }: { text: string }) {
 }
 
 function InlineMarkdown({ text }: { text: string }) {
-  const parts = text.split(/(\*\*.*?\*\*)/g);
+  const cleanText = text.replace(/#+/g, '').trim();
+  const parts = cleanText.split(/(\*\*.*?\*\*)/g);
 
   return (
     <>
