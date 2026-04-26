@@ -1,3 +1,5 @@
+import React from "react";
+
 type StructuredPreviewProps = {
   title: string;
   region: string;
@@ -75,7 +77,7 @@ function AiReportSection({ content }: { content: string }) {
 
 function MarkdownRenderer({ text }: { text: string }) {
   const lines = text.split("\n");
-  const elements: JSX.Element[] = [];
+  const elements: React.ReactNode[] = [];
   let listItems: string[] = [];
   let listType: "ul" | "ol" | null = null;
 
